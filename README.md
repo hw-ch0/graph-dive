@@ -9,7 +9,7 @@ Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structure
 
 ## 1.Requirements
 
-### Verisions *(Recommended)
+### Verisions *(Recommended)*
 Python 3.7.15
 Pytorch 1.12.1+cu113
 Torch_geometric 2.1.0
@@ -22,4 +22,4 @@ Torch_geometric 2.1.0
 
 ### 📝 SKILLS
 Frameworks:  
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"/> <img src="https://img.shields.io/badge/sckit-learn-F7931E?style=flat-square&logo=pytorch&logoColor=white"/>
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"/> <img src="https://img.shields.io/badge/scikit-learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white"/> <img src="https://img.shields.io/badge/pyg-3C2179?style=flat-square&logo=pyg&logoColor=white"/>
