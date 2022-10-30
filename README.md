@@ -2,6 +2,13 @@
 
 # 숨참고 GRAPH-DIVE
 ## Members
+👑 차지수<br>
+ 윤수진<br>
+ 조현우<br>
+ 진현빈<br>
+ 박수빈<br>
+ 김산<br>
+ 김민서<br>
 
 ## 📕 논문의 트렌드를 예측하는 그래프 모델
 Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
