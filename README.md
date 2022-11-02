@@ -24,6 +24,13 @@ Torch_geometric 2.1.0
 ## 2.Model
 
 ## 3.Dataset
+### MAG(Microsoft Academic Graph)
+<figure>
+<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8ad24d82-02ae-4958-b540-766b19b8d3a2/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221102%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221102T115300Z&X-Amz-Expires=86400&X-Amz-Signature=e3ffb395bfc312fea21f9a7e3f59e1dd17ad4b41b2a822663152b8f625bf391a&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject" style="width:50%">
+<figcaption>[Fig 1. MAG Scheme]</figcaption>
+</figure>
+<br>
+논문 제목, 저자의 명성, Abstract, citation 수, conference id를 필터링해서 사용. 
 
 ## 4.Evaluation
 
