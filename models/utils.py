@@ -4,10 +4,8 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-sentences = []
-
-
 def make_sentences():
+    sentences = []
     file_list = os.listdir('./paper')
     for j in tqdm(file_list):
         f = open('./paper/' + j)
@@ -25,10 +23,7 @@ def make_sentences():
             abstract = ""
             for k in range(len(word_index)):
                 abstract += " " + str(word_index[k][0])
-            sentences.append(abstract)
+            sentence = data['results'][i]['title'] + ' ' + abstract
+            sentences.append(sentence)
         f.close()
-
-
-make_sentences()
-tf = TfidfVectorizer(max_features=1000).fit(sentences)
-print(tf.transform([sentences[0]]).toarray())
+    return sentences
