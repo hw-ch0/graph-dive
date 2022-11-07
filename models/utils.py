@@ -4,7 +4,7 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def make_sentences():
+def make_text_corpus_embedding():
     x = 0
     y = 0
     sentences = []
