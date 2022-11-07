@@ -4,13 +4,11 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def make_text_corpus_embedding():
-    x = 0
-    y = 0
+def make_text_corpus_embedding(path):
     sentences = []
-    file_list = os.listdir('./paper')
+    file_list = [file for file in os.listdir(path) if file.endswith('.txt')]
     for j in tqdm(file_list):
-        f = open('./paper/' + j)
+        f = open(os.path.join(path, j))
         data = json.load(f)
         try:
             abstract = data['results'][0]['abstract_inverted_index']
@@ -24,9 +22,7 @@ def make_text_corpus_embedding():
                 abstract += " " + str(word_index[k][0])
             sentence = data['results'][0]['title'] + ' ' + abstract
             sentences.append(sentence)
-            x += 1
         except:
-            y += 1
             pass
         f.close()
     return sentences
