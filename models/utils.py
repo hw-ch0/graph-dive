@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def make_text_corpus_embedding(path):
     sentences = []
-    file_list = [file for file in os.listdir(path) if file.endswith('.txt')]
+    file_list = [file for file in os.listdir(path) if file.endswith('.json')]
     for j in tqdm(file_list):
         f = open(os.path.join(path, j))
         data = json.load(f)
@@ -25,4 +25,5 @@ def make_text_corpus_embedding(path):
         except:
             pass
         f.close()
-    return sentences
+    return TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray()
+
