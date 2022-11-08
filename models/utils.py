@@ -9,12 +9,16 @@ def text_corpus_and_year_embedding(path):
     sentences = []
     years = []
     file_list = [file for file in os.listdir(path) if file.endswith('.json')]
-    for j in tqdm(file_list):
-        f = open(os.path.join(path, j))
+    for file in tqdm(file_list):
+        f = open(os.path.join(path, file))
         data = json.load(f)
         try:
             abstract = data['results'][0]['abstract_inverted_index']
-            year = data['results'][0]['publication_year']
+            pub_year = data['results'][0]['publication_year']
+            if pub_year < 2010:
+                continue
+            year = np.zeros(13)
+            year[pub_year - 2010] = 1.0
             word_index = []
             for k, v in abstract.items():
                 for index in v:
@@ -25,7 +29,7 @@ def text_corpus_and_year_embedding(path):
                 abstract += " " + str(word_index[k][0])
             sentence = data['results'][0]['title'] + ' ' + abstract
             sentences.append(sentence)
-            years.append([year, year])
+            years.append(year)
         except:
             pass
         f.close()
