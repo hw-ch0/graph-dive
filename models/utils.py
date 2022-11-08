@@ -1,4 +1,5 @@
 import os
+import json
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -6,9 +7,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
     """
-    Construct dataset for GNNs
-    
     args:
+    Construct dataset for GNNs
     dir_path: directory of each journal/conference
     affiliation_path: CSV File path that represents authors' affiliation.
     citation_threshold: Criterion that decides whether a paper falls above or below top 10%
@@ -21,24 +21,30 @@ def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
     citation = []
     labels = []
     affiliations = []
-    
+
     # exception case
-    err_cnt = 0
+    load_err = 0
     abstract_err = 0
-    
-    afiliation_table = pd.read_csv(affiliation_path)
+    paper_id_err = 0
+
+    affiliation_table = pd.read_csv(affiliation_path)
 
     file_list = [file for file in os.listdir(dir_path) if file.endswith('.json')]
     for file in tqdm(file_list):
-        f = open(os.path.join(path, file))
+        f = open(os.path.join(dir_path, file))
         paper_id = file.split('.')[0]
 
-        affiliation_vector = afiliation_table[afiliation_table['PaperId']==paper_id].values[1:]
+        try:
+            affiliation_vector = affiliation_table[affiliation_table['PaperId']==int(paper_id)].values[0]
+        except:
+            paper_id_err += 1
+            continue
 
         try:
             data = json.load(f)
         except:
-            err_cnt += 1
+            load_err += 1
+            continue
 
         abstract = data['abstract_inverted_index'] 
         if abstract==None:
@@ -48,8 +54,6 @@ def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
         citation_cnt = data['cited_by_count']
         label = 1 if citation_cnt>citation_threshold else 0
 
-        if pub_year < 2010:
-            continue
         year = np.zeros(13)
         year[pub_year - 2010] = 1.0
         word_index = []
@@ -69,11 +73,14 @@ def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
 
 
         f.close()
-        
-    if not err_cnt:
-        print("Warning: {} json files are failed to upload.".format(err_cnt))
-    if not abstract_cnt:
+
+    if load_err:
+        print("Warning: {} json files are failed to upload.".format(load_err))
+    if abstract_err:
         print("Warning: {} json files don't have abstract data.".format(abstract_err))
-    print("{} json files are uploaded.".format(len(file_list)-err_cnt-abstract_cnt))
+    if paper_id_err:    
+        print("Warning: {} paper-IDs do not exist.".format(paper_id_err))
+
+    print("{} json files are uploaded.".format(len(file_list)-load_err-abstract_err-paper_id_err))
 
     return TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray(), np.array(years), np.array(affiliations), np.array(labels)
