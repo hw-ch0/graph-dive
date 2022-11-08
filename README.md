@@ -17,9 +17,21 @@ Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structure
 ## 1.Requirements
 
 ### Verisions *(Recommended)*
-Python 3.7.15
-Pytorch 1.12.1+cu113
-Torch_geometric 2.1.0
+Python 3.7.15  
+Pytorch 1.12.1+cu113  
+Torch_geometric 2.1.0  
+
+### Docker
+Dockerfile 제공
+[Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile)
+```
+# build docker image
+$ docker build -t graph-dive:latest . 
+
+# execute docker container
+$ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /workspace graph-dive:latest /bin/bash
+```
+
 
 ## 2.Model
 
