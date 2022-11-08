@@ -22,8 +22,7 @@ Pytorch 1.12.1+cu113
 Torch_geometric 2.1.0  
 
 ### Docker
-Dockerfile 제공
-[Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile)
+[Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile) 제공
 ```
 # build docker image
 $ docker build -t graph-dive:latest . 
