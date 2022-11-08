@@ -15,10 +15,15 @@ class GCNModel(nn.Module):
         self.convs.append(self.build_conv_model(input_dim, hidden_dim))
         for _ in range(self.num_layers-2):
             self.convs.append(self.build_conv_model(hidden_dim, hidden_dim))
-        self.convs.append(self.build_conv_model(hidden_dim, output_dim))
+        self.convs.append(self.build_conv_model(hidden_dim, hidden_dim))
 
         for _ in range(self.num_layers-1):
             self.lns.append(nn.LayerNorm(hidden_dim))
+
+        self.post_mp = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim), nn.Dropout(dropout),
+            nn.Linear(hidden_dim, output_dim)
+        )
 
         self.dropout = dropout
         self.training = training
