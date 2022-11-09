@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class FCModel(nn.Module):
@@ -11,8 +12,8 @@ class FCModel(nn.Module):
 
     def forward(self, data):
         text, affiliation, year = data
-        text_emb = self.text_fc(text)
-        affiliation_emb = self.affiliation_fc(affiliation)
-        year_emb = self.year_fc(year)
+        text_emb = F.relu(self.text_fc(text))
+        affiliation_emb = F.relu(self.affiliation_fc(affiliation))
+        year_emb = F.relu(self.year_fc(year))
 
         return torch.cat([text_emb, affiliation_emb, year_emb])
