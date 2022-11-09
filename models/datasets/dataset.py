@@ -1,5 +1,5 @@
 import torch.utils.data as data
-from utils import *
+from .utils import construct_data
 
 
 class DiveDataset(data.Dataset):
