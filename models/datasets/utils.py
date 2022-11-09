@@ -36,13 +36,13 @@ def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
 
         try:
             affiliation_vector = affiliation_table[affiliation_table['PaperId']==int(paper_id)].values[0]
-        except:
+        except IndexError:
             paper_id_err += 1
             continue
 
         try:
             data = json.load(f)
-        except:
+        except json.JSONDecodeError:
             load_err += 1
             continue
 
