@@ -93,13 +93,17 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
     if paper_id_err:
         print("Warning: {} paper-IDs do not exist.".format(paper_id_err))
 
-    print("{} json files are uploaded.".format(len(file_list) - load_err - abstract_err - paper_id_err))
+    num_valid_files = len(file_list) - load_err - abstract_err - paper_id_err
+    print("{} json files are uploaded.".format(num_valid_files))
 
     return np.array(ids), TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray(), np.array(years), np.\
-        array(affiliations), np.array(labels)
+        array(affiliations), np.array(labels), num_valid_files
 
-def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year_data_path:str) -> torch_geometric.data.Data:
-
+def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year_data_path:str, epoch:int) -> torch_geometric.data.Data:
+    """
+    epoch: for printing error
+    """
+    
     edge_data = pd.read_csv(edge_data_path)
     edge_data = edge_data.iloc[:,:2]
 
@@ -119,13 +123,17 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     node_mapping_dict = {a: i for i, a in enumerate(total_nodes)}
 
     edges = []
+    paper_id_err = 0
     for idx,paper_id in enumerate(paper_ids):
 
         try:
-            src = edge_data[edge_data['PaperId']==paper_id].values[0]
-            tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
+            src = edge_data[edge_data['PaperId']==int(paper_id)].values[0][0]
+            tgt = edge_data[edge_data['PaperId']==int(paper_id)].values[0][1]
+            # src = edge_data[edge_data['PaperId']==paper_id].values[0]
+            # tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
         except IndexError:
-            print("paper id not exist in edge_data")
+            # print("paper id not exist in edge_data")
+            paper_id_err += 1
             continue
 
         mapped_src = node_mapping_dict.get(src)
@@ -137,7 +145,10 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
         else:
             edges.append([mapped_tgt, mapped_src])
 
-    data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
+    if epoch==0:
+        print("CHECK: {} paper_id_errs".format(paper_id_err))
+    # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
+    data = torch_geometric.data.Data(x = embeddings,
                                      y = torch.tensor(labels, dtype=torch.long),
                                      edge_index = torch.tensor(edges).T,
                                      train_idx = train_idx,

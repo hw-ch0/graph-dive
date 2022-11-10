@@ -8,10 +8,9 @@ class DiveFCDataset(data.Dataset):
     def __init__(self, dir_path, affiliation_path, citation_threshold):
         super(DiveFCDataset, self).__init__()
 
-        self.batch_size = 128
-        
-        paper_ids, texts, years, authors, labels = construct_fc_data(dir_path, affiliation_path, citation_threshold)
-
+        paper_ids, texts, years, authors, labels, num_valid_files = construct_fc_data(dir_path, affiliation_path, citation_threshold)
+        self.batch_size = num_valid_files
+    
         self.paper_ids = paper_ids
         self.data = torch.FloatTensor(np.hstack([texts, years, authors]))
         # self.data = torch.FloatTensor(np.array([texts, years, authors]))
