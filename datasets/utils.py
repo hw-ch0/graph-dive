@@ -105,7 +105,10 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
 
     year_data = pd.read_csv(year_data_path)
     train_idx = year_data[year_data['Year']<2018]['PaperId'].tolist()
-    val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    
+    # val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    val_idx = year_data[(year_data['Year']<2020) & (year_data['Year']>=2018)]['PaperId'].tolist()
+    
     test_idx = year_data[year_data['Year']==2020]['PaperId'].tolist()
 
     total_nodes = []
