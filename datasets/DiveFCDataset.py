@@ -1,5 +1,5 @@
 import torch.utils.data as data
-from .utils import construct_data
+from .utils import construct_fc_data
 
 
 class DiveFCDataset(data.Dataset):
@@ -8,7 +8,7 @@ class DiveFCDataset(data.Dataset):
         self.dir_path = dir_path
         self.affiliation_path = affiliation_path
         self.citation_threshold = citation_threshold
-        self.texts, self.years, self.authors, self.labels = construct_data(dir_path, affiliation_path,
+        self.texts, self.years, self.authors, self.labels = construct_fc_data(dir_path, affiliation_path,
                                                                            citation_threshold)
 
     def __getitem__(self, index):

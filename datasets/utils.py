@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def construct_data(dir_path:str, affiliation_path:str, citation_threshold:int):
+def construct_fc_data(dir_path:str, affiliation_path:str, citation_threshold:int):
     """
     args:
     Construct dataset for GNNs
