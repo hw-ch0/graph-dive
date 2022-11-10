@@ -8,7 +8,7 @@ class GCNModel(nn.Module):
     def __init__(self, num_layers, input_dim, hidden_dim, output_dim, dropout=0.3, training=True):
         super(GCNModel, self).__init__()
 
-        self.num_layers = num_layers
+        self.num_layers = num_layers #2
         self.convs = nn.ModuleList()
         self.lns = nn.ModuleList()
 
@@ -31,8 +31,8 @@ class GCNModel(nn.Module):
     def build_conv_model(self, input_dim, hidden_dim):
         return GCNConv(input_dim, hidden_dim)
 
-    def forward(self, data):
-        x, edge_index, batch = data.x, data.edge_index, data.batch
+    def forward(self, x, data):
+        x, edge_index, batch = x, data.edge_index, data.batch
         for i in range(self.num_layers):
             x = self.convs[i](x, edge_index)
             x = F.relu(x)

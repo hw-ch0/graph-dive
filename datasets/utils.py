@@ -146,10 +146,11 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
             edges.append([mapped_tgt, mapped_src])
 
     if epoch==0:
-        print("CHECK: {} paper_id_errs".format(paper_id_err))
+        print("Warning: {} PaperIds don't exist in edge data".format(paper_id_err))
     # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
     data = torch_geometric.data.Data(x = embeddings,
-                                     y = torch.tensor(labels, dtype=torch.long),
+                                    #  y = torch.tensor(labels, dtype=torch.long),
+                                     y = labels,
                                      edge_index = torch.tensor(edges).T,
                                      train_idx = train_idx,
                                      val_idx = val_idx,

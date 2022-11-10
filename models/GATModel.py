@@ -8,7 +8,7 @@ class GATModel(nn.Module):
     def __init__(self, num_layers, input_dim, hidden_dim, output_dim, heads):
         super(GATModel, self).__init__()
 
-        self.num_layers = num_layers
+        self.num_layers = num_layers #3
         self.heads = heads
 
         self.convs = nn.ModuleList()
