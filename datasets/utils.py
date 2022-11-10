@@ -2,21 +2,13 @@ import os
 import json
 import numpy as np
 import pandas as pd
+import torch
+import torch_geometric
 from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def change_edge_data(file):
-    t = pd.read_csv(file)
-    dic = {}
-    for x, y in zip(t['PaperId'], t['PaperReferenceId']):
-        if x not in dic.keys():
-            dic[x] = []
-        dic[x].append(y)
-    return dic
-
-
-def construct_data(dir_path: str, affiliation_path: str, citation_threshold: int):
+def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: int):
     """
     args:
     Construct dataset for GNNs
@@ -96,3 +88,47 @@ def construct_data(dir_path: str, affiliation_path: str, citation_threshold: int
 
     return np.array(ids), TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray(), np.array(years), np.\
         array(affiliations), np.array(labels)
+
+def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year_data_path:str) -> torch_geometric.data.Data:
+
+    edge_data = pd.read_csv(edge_data_path)
+    edge_data = edge_data.iloc[:,:2]
+
+    year_data = pd.read_csv(year_data_path)
+    train_idx = year_data[year_data['Year']<2018]['PaperId'].tolist()
+    val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    test_idx = year_data[year_data['Year']==2020]['PaperId'].tolist()
+
+    total_nodes = []
+    total_nodes.extend(list(edge_data['PaperId']))
+    total_nodes.extend(list(edge_data['PaperReferenceId']))
+    total_nodes = list(set(total_nodes))
+
+    node_mapping_dict = {a: i for i, a in enumerate(total_nodes)}
+
+    edges = []
+    for idx,paper_id in enumerate(paper_ids):
+
+        try:
+            src = edge_data[edge_data['PaperId']==paper_id].values[0]
+            tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
+        except IndexError:
+            print("paper id not exist in edge_data")
+            continue
+
+        mapped_src = node_mapping_dict.get(src)
+        mapped_tgt = node_mapping_dict.get(tgt)
+
+        if paper_id in train_idx:
+            edges.append([mapped_src, mapped_tgt])
+            edges.append([mapped_tgt, mapped_src])
+        else:
+            edges.append([mapped_tgt, mapped_src])
+
+    data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
+                                     y = torch.tensor(labels, dtype=torch.long),
+                                     edge_index = torch.tensor(edges).T,
+                                     train_idx = train_idx,
+                                     val_idx = val_idx,
+                                     test_idx = test_idx)
+    return data
