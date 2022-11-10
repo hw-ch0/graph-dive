@@ -42,6 +42,7 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
     affiliation_table = pd.read_csv(affiliation_path)
 
     file_list = [file for file in os.listdir(dir_path) if file.endswith('.json')]
+    print("Loading json files...")
     for file in tqdm(file_list):
         f = open(os.path.join(dir_path, file))
         paper_id = file.split('.')[0]
@@ -94,7 +95,7 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
         print("Warning: {} paper-IDs do not exist.".format(paper_id_err))
 
     num_valid_files = len(file_list) - load_err - abstract_err - paper_id_err
-    print("{} json files are uploaded.".format(num_valid_files))
+    print("{}/{} json files are uploaded.".format(num_valid_files, len(file_list)))
 
     return np.array(ids), TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray(), np.array(years), np.\
         array(affiliations), np.array(labels), num_valid_files
@@ -146,7 +147,7 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
             edges.append([mapped_tgt, mapped_src])
 
     if epoch==0:
-        print("Warning: {} PaperIds don't exist in edge data".format(paper_id_err))
+        print("Warning: {} Paper Ids don't exist in edge data".format(paper_id_err))
     # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
     data = torch_geometric.data.Data(x = embeddings,
                                     #  y = torch.tensor(labels, dtype=torch.long),
