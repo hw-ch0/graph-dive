@@ -2,9 +2,9 @@ import torch.utils.data as data
 from .utils import construct_data
 
 
-class DiveDataset(data.Dataset):
+class DiveFCDataset(data.Dataset):
     def __init__(self, dir_path, affiliation_path, citation_threshold):
-        super(DiveDataset, self).__init__()
+        super(DiveFCDataset, self).__init__()
         self.dir_path = dir_path
         self.affiliation_path = affiliation_path
         self.citation_threshold = citation_threshold
