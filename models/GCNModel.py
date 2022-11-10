@@ -42,7 +42,7 @@ class GCNModel(nn.Module):
 
         x = self.post_mp(x)
 
-        return x
+        return torch.sigmoid(x)
 
     def loss(self, pred, label):
         return F.cross_entropy(pred, label)
