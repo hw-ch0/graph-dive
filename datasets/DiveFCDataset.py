@@ -8,13 +8,12 @@ class DiveFCDataset(data.Dataset):
 
         self.batch_size = 128
         
-        texts, years, authors, labels = construct_data(dir_path, affiliation_path, citation_threshold)
-        self.data = torch.FloatTensor([texts, years, authors])
+        paper_ids, texts, years, authors, labels = construct_data(dir_path, affiliation_path, citation_threshold)
+        self.data = torch.FloatTensor([paper_ids, texts, years, authors])
         self.target = torch.FloatTensor(labels)
         
 
     def __getitem__(self, index):
-        return self.texts, self.years, self.authors, self.labels
         return self.data[index], self.target[index]
 
     def __len__(self):
