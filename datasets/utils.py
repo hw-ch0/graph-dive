@@ -8,6 +8,15 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
+def delete_fake_node(file):
+    for con in os.listdir(file):
+        f = pd.read_csv(os.path.join(file, con))
+        id_set = set(list(f['PaperId']) + list(f['PaperReferenceId']))
+        for paper in os.listdir(os.path.join('datasets', con.split(".")[0])):
+            if int(paper.split(".")[0]) not in id_set:
+                os.remove(os.path.join(con.split(".")[0], paper))
+
+
 def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: int):
     """
     args:
