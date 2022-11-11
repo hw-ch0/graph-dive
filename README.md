@@ -34,9 +34,9 @@ $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /wo
 
 ## Dataset
 ### MAG(Microsoft Academic Graph)
-<figure>
+
 ![MAG schema](https://user-images.githubusercontent.com/96547408/201435997-98326513-dfcb-4d05-bec1-90a30177e152.png)
-<figcaption>[Fig 1. MAG Scheme]</figcaption>
+[Fig 1. MAG Scheme]
 </figure>
 <br>
 We use author, affiliation, the number of citation, title and abstract of paper, year as raw inputs. 
