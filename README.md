@@ -43,6 +43,42 @@ $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /wo
 <br>
 논문 제목, 저자의 명성, Abstract, citation 수, conference id를 필터링해서 사용. 
 
+### Data directory tree
+Directory tree including data should be as follows:  
+``` 
+├─graph-dive/
+└─data/
+	├─ affiliationembedding.csv
+	├─ edge_data/
+	│   ├─ 1158167855_refs.csv #{CVPR_conference_id}_refs.csv
+	│   ├─ 1184914352_refs.csv #{AAAI_conference_id}_refs.csv
+	│   └─ ...
+	├─ year_data/
+	│   ├─ 1158167855.csv #{CVPR_conference_id}.csv
+	│   ├─ 1184914352.csv #{AAAI_conference_id}.csv 
+	│   └─ ...
+	├─ json_1158167855/ # CVPR
+	│   ├─ {paper_id1}.json
+	│   ├─ {paper_id2}.json
+	│   └─ ...
+	├─ json_1184914352/ # AAAI
+	│   └─ ...
+	...
+```
+
+For each journal/conference, conference IDs are look like:  
+|Conference|Conference ID|# of data|
+|------|-------|------|
+|ICML|1180662882|8653|
+|ICASSP|1121227772|16997|
+|NeurIPS|1127325140|8113|
+|AAAI|1184914352|13766|
+|EMNLP|1192655580|5667|
+|CVPR|1158167855|13058|
+|ICDM|1183478919|4169|
+|CIKM|1194094125|4201|
+
+
 ## 4.Evaluation
 
 ### 📝 SKILLS

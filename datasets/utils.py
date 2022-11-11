@@ -8,6 +8,15 @@ from tqdm import tqdm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
+def delete_fake_node(file):
+    for con in os.listdir(file):
+        f = pd.read_csv(os.path.join(file, con))
+        id_set = set(list(f['PaperId']) + list(f['PaperReferenceId']))
+        for paper in os.listdir(os.path.join('datasets', con.split(".")[0])):
+            if int(paper.split(".")[0]) not in id_set:
+                os.remove(os.path.join(con.split(".")[0], paper))
+
+
 def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: int):
     """
     args:
@@ -33,6 +42,7 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
     affiliation_table = pd.read_csv(affiliation_path)
 
     file_list = [file for file in os.listdir(dir_path) if file.endswith('.json')]
+    print("Loading json files...")
     for file in tqdm(file_list):
         f = open(os.path.join(dir_path, file))
         paper_id = file.split('.')[0]
@@ -84,19 +94,26 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
     if paper_id_err:
         print("Warning: {} paper-IDs do not exist.".format(paper_id_err))
 
-    print("{} json files are uploaded.".format(len(file_list) - load_err - abstract_err - paper_id_err))
+    num_valid_files = len(file_list) - load_err - abstract_err - paper_id_err
+    print("{}/{} json files are uploaded.".format(num_valid_files, len(file_list)))
 
     return np.array(ids), TfidfVectorizer(max_features=1000).fit_transform(sentences).toarray(), np.array(years), np.\
-        array(affiliations), np.array(labels)
+        array(affiliations), np.array(labels), num_valid_files
 
-def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year_data_path:str) -> torch_geometric.data.Data:
-
+def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year_data_path:str, epoch:int) -> torch_geometric.data.Data:
+    """
+    epoch: for printing error
+    """
+    
     edge_data = pd.read_csv(edge_data_path)
     edge_data = edge_data.iloc[:,:2]
 
     year_data = pd.read_csv(year_data_path)
     train_idx = year_data[year_data['Year']<2018]['PaperId'].tolist()
-    val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    
+    # val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    val_idx = year_data[(year_data['Year']<2020) & (year_data['Year']>=2018)]['PaperId'].tolist()
+    
     test_idx = year_data[year_data['Year']==2020]['PaperId'].tolist()
 
     total_nodes = []
@@ -107,13 +124,17 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     node_mapping_dict = {a: i for i, a in enumerate(total_nodes)}
 
     edges = []
+    paper_id_err = 0
     for idx,paper_id in enumerate(paper_ids):
 
         try:
-            src = edge_data[edge_data['PaperId']==paper_id].values[0]
-            tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
+            src = edge_data[edge_data['PaperId']==int(paper_id)].values[0][0]
+            tgt = edge_data[edge_data['PaperId']==int(paper_id)].values[0][1]
+            # src = edge_data[edge_data['PaperId']==paper_id].values[0]
+            # tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
         except IndexError:
-            print("paper id not exist in edge_data")
+            # print("paper id not exist in edge_data")
+            paper_id_err += 1
             continue
 
         mapped_src = node_mapping_dict.get(src)
@@ -125,8 +146,12 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
         else:
             edges.append([mapped_tgt, mapped_src])
 
-    data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
-                                     y = torch.tensor(labels, dtype=torch.long),
+    if epoch==0:
+        print("Warning: {} Paper Ids don't exist in edge data".format(paper_id_err))
+    # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
+    data = torch_geometric.data.Data(x = embeddings,
+                                    #  y = torch.tensor(labels, dtype=torch.long),
+                                     y = labels,
                                      edge_index = torch.tensor(edges).T,
                                      train_idx = train_idx,
                                      val_idx = val_idx,
