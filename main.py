@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from datasets.utils import *
 from datasets.DiveFCDataset import DiveFCDataset
 from models import FCModel, GATModel, GCNModel
+from sklearn import metrics
 import matplotlib.pyplot as plt
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -18,7 +19,7 @@ def parse_args():
                         help="path of CSV File path that represents authors' affiliation.")
     parser.add_argument('--citation_threshold', type=int, default=20,
                         help="criterion that decides whether a paper falls above or below top 10%")
-    parser.add_argument('--val_interval', type=int, default=None,
+    parser.add_argument('--val_interval', type=int, default=10,
                         help="run validation per arguments' epoch if exists")
 
     args = parser.parse_args()
@@ -47,6 +48,7 @@ def main():
     # instantiate objective function and optimizer
     params = [*fcnet.parameters(), *gat.parameters(), *gcn.parameters()]
     optimizer = torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), weight_decay=5e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50, eta_min=0)
     criterion = nn.BCELoss()
 
     # training
@@ -54,8 +56,11 @@ def main():
     loss_history = []
 
     for epoch in range(epochs):
+
+        fcnet.train()
+        gat.train()
+        gcn.train()
         optimizer.zero_grad()
-        
         # train FC layers with raw inputs
         for paper_ids, inputs, labels in divefc_loader:
             inputs, labels = inputs.to(device), labels.to(device)
@@ -75,11 +80,40 @@ def main():
             loss.backward()
             optimizer.step()
 
-        # if args.val_interval and epoch % args.val_interval==0:
-
-            
-        print("[Epoch {}/{}] Loss: {:.6f}".format(epoch, epochs, loss.item()))
+        scheduler.step()
+        print("[Epoch {}/{}] Train Loss: {:.6f}".format(epoch, epochs, loss.item()))
         loss_history.append(loss.item())
+
+        if args.val_interval and epoch % args.val_interval==0:
+            fcnet.eval()
+            gat.eval()
+            gcn.eval()
+
+            with torch.no_grad():
+
+                for paper_ids, inputs, labels in divefc_loader:
+                    inputs, labels = inputs.to(device), labels.to(device)
+                    embeddings = fcnet(inputs)  # # [batchsize, 202]
+
+                graph_data = construct_graph_data(paper_ids, embeddings, labels, edge_data_path, year_data_path, epoch)
+                graph_loader = torch_geometric.loader.DataLoader([graph_data], batch_size=len(labels), shuffle=False)
+
+                # train GAT and GCN
+                for idx, train_batch in enumerate(graph_loader):
+                    train_batch = train_batch.to(device)
+                    gat_embeddings = gat(train_batch)  # [batchsize, 30]
+
+                    pred = gcn(gat_embeddings, train_batch)
+                    pred = (pred>0.5).long()
+                    f1_score = metrics.f1_score(y_true = train_batch.y[graph_data.val_idx],
+                                                y_pred = pred[graph_data.val_idx].squeeze(1))
+                    accuracy = metrics.accuracy_score(y_true = train_batch.y[graph_data.val_idx],
+                                                      y_pred = pred[graph_data.val_idx].squeeze(1))
+
+                print("[Epoch {}/{}] Validation F1 Score: {:.6f}".format(epoch, epochs, f1_score))
+                print("[Epoch {}/{}] Validation Accuracy: {:.6f}".format(epoch, epochs, accuracy))
+            
+
 
 
     # plot training loss curve
