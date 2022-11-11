@@ -18,6 +18,9 @@ def parse_args():
                         help="path of CSV File path that represents authors' affiliation.")
     parser.add_argument('--citation_threshold', type=int, default=20,
                         help="criterion that decides whether a paper falls above or below top 10%")
+    parser.add_argument('--val_interval', type=int, default=None,
+                        help="run validation per arguments' epoch if exists")
+
     args = parser.parse_args()
     return args
 
@@ -25,9 +28,11 @@ def parse_args():
 def main():    
     args = parse_args()
     conf_path = "../data/json_" + args.conf_id
+    edge_data_path = '../data/edge_data/' + args.conf_id + '_refs.csv'
+    year_data_path = '../data/year_data/' + args.conf_id + '.csv'
 
     # load raw_inputs from data tables
-    divefc_set = DiveFCDataset(conf_path, args.affil_embed_file, args.citation_threshold)
+    divefc_set = DiveFCDataset(conf_path, args.affil_embed_file, edge_data_path, args.citation_threshold)
     divefc_loader = DataLoader(divefc_set, batch_size=divefc_set.batch_size, shuffle=True)
 
     # instantiate models
@@ -46,8 +51,6 @@ def main():
 
     # training
     epochs = 150
-    edge_data_path = '../data/edge_data/' + args.conf_id + '_refs.csv'
-    year_data_path = '../data/year_data/' + args.conf_id + '.csv'
     loss_history = []
 
     for epoch in range(epochs):
@@ -67,11 +70,15 @@ def main():
             gat_embeddings = gat(train_batch) # [batchsize, 30]
             
             pred = gcn(gat_embeddings, train_batch)
-            
-            loss = criterion(pred.squeeze(1), train_batch.y)
+            print(pred[graph_data.train_idx].shape)
+            print(train_batch.y[graph_data.train_idx].shape)
+            loss = criterion(pred[graph_data.train_idx].squeeze(1), train_batch.y[graph_data.train_idx])
             
             loss.backward()
             optimizer.step()
+
+        # if args.val_interval and epoch % args.val_interval==0:
+
             
         print("[Epoch {}/{}] Loss: {:.6f}".format(epoch, epochs, loss.item()))
         loss_history.append(loss.item())
