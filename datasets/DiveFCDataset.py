@@ -5,10 +5,10 @@ from .utils import construct_fc_data
 
 
 class DiveFCDataset(data.Dataset):
-    def __init__(self, dir_path, affiliation_path, citation_threshold):
+    def __init__(self, dir_path, affiliation_path, edge_data_path, citation_threshold):
         super(DiveFCDataset, self).__init__()
 
-        paper_ids, texts, years, authors, labels, num_valid_files = construct_fc_data(dir_path, affiliation_path, citation_threshold)
+        paper_ids, texts, years, authors, labels, num_valid_files = construct_fc_data(dir_path, affiliation_path, edge_data_path, citation_threshold)
         self.batch_size = num_valid_files
     
         self.paper_ids = paper_ids
