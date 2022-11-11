@@ -153,7 +153,7 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
                                     #  y = torch.tensor(labels, dtype=torch.long),
                                      y = labels,
                                      edge_index = torch.tensor(edges).T,
-                                     train_idx = train_idx,
-                                     val_idx = val_idx,
-                                     test_idx = test_idx)
+                                     train_idx = [node_mapping_dict.get(i) for i in train_idx],
+                                     val_idx = [node_mapping_dict.get(i) for i in val_idx],
+                                     test_idx = [node_mapping_dict.get(i) for i in test_idx])
     return data
