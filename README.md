@@ -87,11 +87,12 @@ Command examples
 ```
 # CVPR
 $ bash scripts/run_CVPR.sh
+
 # ICASSP
 $ bash scripts/run_ICASSP.sh
 ```
 Note that the number of valid data are smaller than the values stated above due to insufficient sources(OpenAlex API, MAG dataset, etc..)
 
-### 📝 SKILLS
+## 📝 SKILLS
 Frameworks:  
 <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"/> <img src="https://img.shields.io/badge/scikit-learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white"/> <img src="https://img.shields.io/badge/pyg-3C2179?style=flat-square&logo=pyg&logoColor=white"/>
