@@ -17,7 +17,7 @@ def delete_fake_node(file):
                 os.remove(os.path.join(con.split(".")[0], paper))
 
 
-def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: int):
+def construct_fc_data(dir_path: str, affiliation_path: str, edge_data_path: str, citation_threshold: int):
     """
     args:
     Construct dataset for GNNs
@@ -41,14 +41,26 @@ def construct_fc_data(dir_path: str, affiliation_path: str, citation_threshold: 
 
     affiliation_table = pd.read_csv(affiliation_path)
 
+    # load edge_data
+    edge_data = pd.read_csv(edge_data_path)
+    edge_data = edge_data.iloc[:, :2]
+    total_nodes = []
+    total_nodes.extend(list(edge_data['PaperId']))
+    total_nodes.extend(list(edge_data['PaperReferenceId']))
+    total_nodes = list(set(total_nodes))
+
     file_list = [file for file in os.listdir(dir_path) if file.endswith('.json')]
     print("Loading json files...")
     for file in tqdm(file_list):
         f = open(os.path.join(dir_path, file))
-        paper_id = file.split('.')[0]
+        paper_id = int(file.split('.')[0])
+
+        # isolated vertex->continue
+        if paper_id not in total_nodes:
+            continue
 
         try:
-            affiliation_vector = affiliation_table[affiliation_table['PaperId'] == int(paper_id)].values[0]
+            affiliation_vector = affiliation_table[affiliation_table['PaperId'] == paper_id].values[0]
         except IndexError:
             paper_id_err += 1
             continue
@@ -109,27 +121,27 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     edge_data = edge_data.iloc[:,:2]
 
     year_data = pd.read_csv(year_data_path)
+    year_data['PaperId'] = year_data['PaperId'].apply(int)
+
     train_idx = year_data[year_data['Year']<2018]['PaperId'].tolist()
-    
-    # val_idx = year_data[year_data['Year']<2020 and year_data['Year']>=2018]['PaperId'].tolist()
+    train_idx = [i for i in train_idx if i in paper_ids]
+
     val_idx = year_data[(year_data['Year']<2020) & (year_data['Year']>=2018)]['PaperId'].tolist()
-    
+    val_idx = [i for i in val_idx if i in paper_ids]
+
     test_idx = year_data[year_data['Year']==2020]['PaperId'].tolist()
+    test_idx = [i for i in test_idx if i in paper_ids]
 
-    total_nodes = []
-    total_nodes.extend(list(edge_data['PaperId']))
-    total_nodes.extend(list(edge_data['PaperReferenceId']))
-    total_nodes = list(set(total_nodes))
-
-    node_mapping_dict = {a: i for i, a in enumerate(total_nodes)}
+    node_mapping_dict = {a.item(): i for i, a in enumerate(paper_ids)}
 
     edges = []
     paper_id_err = 0
     for idx,paper_id in enumerate(paper_ids):
 
+
         try:
-            src = edge_data[edge_data['PaperId']==int(paper_id)].values[0][0]
-            tgt = edge_data[edge_data['PaperId']==int(paper_id)].values[0][1]
+            src = edge_data[edge_data['PaperId']==paper_id].values[0][0]
+            tgt = edge_data[edge_data['PaperId']==paper_id].values[0][1]
             # src = edge_data[edge_data['PaperId']==paper_id].values[0]
             # tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
         except IndexError:
