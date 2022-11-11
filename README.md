@@ -31,6 +31,13 @@ $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /wo
 
 
 ## Model
+We follow the architecture of baseline paper which is based on GATs and GCNs.  
+[Training stage]
+![train_figure](https://user-images.githubusercontent.com/96547408/201436402-ab75bdf4-a249-4c15-82db-d6496a480fde.jpg)
+
+[Prediction stage]
+![test_figure](https://user-images.githubusercontent.com/96547408/201436425-743df10e-c2a7-4424-9141-f39611579f07.jpg)
+
 
 ## Dataset
 ### MAG(Microsoft Academic Graph)
@@ -38,7 +45,6 @@ $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /wo
 ![MAG schema](https://user-images.githubusercontent.com/96547408/201435997-98326513-dfcb-4d05-bec1-90a30177e152.png)
 [Fig 1. MAG Scheme]
 </figure>
-<br>
 We use author, affiliation, the number of citation, title and abstract of paper, year as raw inputs. 
 
 ### Data directory tree
