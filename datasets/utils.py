@@ -116,7 +116,8 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     """
     epoch: for printing error
     """
-    
+    paper_ids = [i.item() for i in paper_ids]
+
     edge_data = pd.read_csv(edge_data_path)
     edge_data = edge_data.iloc[:,:2]
 
@@ -132,24 +133,26 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     test_idx = year_data[year_data['Year']==2020]['PaperId'].tolist()
     test_idx = [i for i in test_idx if i in paper_ids]
 
-    node_mapping_dict = {a.item(): i for i, a in enumerate(paper_ids)}
+    node_mapping_dict = {a: i for i, a in enumerate(paper_ids)}
 
     edges = []
     paper_id_err = 0
+    notexist_err = 0
     for idx,paper_id in enumerate(paper_ids):
 
+        # try:
         try:
             src = edge_data[edge_data['PaperId']==paper_id].values[0][0]
             tgt = edge_data[edge_data['PaperId']==paper_id].values[0][1]
-            # src = edge_data[edge_data['PaperId']==paper_id].values[0]
-            # tgt = edge_data[edge_data['PaperId']==paper_id].values[1]
         except IndexError:
-            # print("paper id not exist in edge_data")
             paper_id_err += 1
             continue
 
         mapped_src = node_mapping_dict.get(src)
         mapped_tgt = node_mapping_dict.get(tgt)
+        if mapped_src==None or mapped_tgt==None:
+            notexist_err += 1
+            continue
 
         if mapped_src in train_idx:
             edges.append([mapped_src, mapped_tgt])
