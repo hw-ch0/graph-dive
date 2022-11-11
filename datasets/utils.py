@@ -138,7 +138,6 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
     paper_id_err = 0
     for idx,paper_id in enumerate(paper_ids):
 
-
         try:
             src = edge_data[edge_data['PaperId']==paper_id].values[0][0]
             tgt = edge_data[edge_data['PaperId']==paper_id].values[0][1]
@@ -152,7 +151,7 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
         mapped_src = node_mapping_dict.get(src)
         mapped_tgt = node_mapping_dict.get(tgt)
 
-        if paper_id in train_idx:
+        if mapped_src in train_idx:
             edges.append([mapped_src, mapped_tgt])
             edges.append([mapped_tgt, mapped_src])
         else:
