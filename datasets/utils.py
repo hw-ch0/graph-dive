@@ -162,9 +162,9 @@ def construct_graph_data(paper_ids, embeddings, labels, edge_data_path:str, year
 
     if epoch==0:
         print("Warning: {} Paper Ids don't exist in edge data".format(paper_id_err))
-    print("Number of Train Nodes : {}".format(len(train_idx)))
-    print("Number of Validation Nodes : {}".format(len(val_idx)))
-    print("Number of Test Nodes : {}".format(len(test_idx)))
+        print("Number of Train Nodes : {}".format(len(train_idx)))
+        print("Number of Validation Nodes : {}".format(len(val_idx)))
+        print("Number of Test Nodes : {}".format(len(test_idx)))
     # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
     data = torch_geometric.data.Data(x = embeddings,
                                     #  y = torch.tensor(labels, dtype=torch.long),
