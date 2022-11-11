@@ -70,8 +70,6 @@ def main():
             gat_embeddings = gat(train_batch) # [batchsize, 30]
             
             pred = gcn(gat_embeddings, train_batch)
-            print(pred[graph_data.train_idx].shape)
-            print(train_batch.y[graph_data.train_idx].shape)
             loss = criterion(pred[graph_data.train_idx].squeeze(1), train_batch.y[graph_data.train_idx])
             
             loss.backward()
