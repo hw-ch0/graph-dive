@@ -70,7 +70,7 @@ Directory tree including data should be as follows:
 ```
 
 For each journal/conference, conference IDs are look like:  
-|Conference|Conference ID|# of data|
+|Conference|Conference ID|# of node|
 |------|-------|------|
 |ICML|1180662882|8653|
 |ICASSP|1121227772|16997|
