@@ -20,7 +20,7 @@ def parse_args():
                         help="path of CSV File path that represents authors' affiliation.")
     parser.add_argument('--citation_threshold', type=int, default=20,
                         help="criterion that decides whether a paper falls above or below top 10%")
-    parser.add_argument('--val_interval', type=int, default=1,
+    parser.add_argument('--val_interval', type=int, default=5,
                         help="run validation per arguments' epoch if exists")
 
     args = parser.parse_args()
@@ -46,7 +46,8 @@ def main():
     model.to(device)
 
     # instantiate objective function and optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, betas=(0.9, 0.999), weight_decay=5e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=5e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50, eta_min=0)
     criterion = nn.BCELoss()
 
     # training
@@ -71,6 +72,7 @@ def main():
             optimizer.step()
             train_loss += loss.item()
 
+        scheduler.step()
         print("[Epoch {}/{}] Train Loss: {:.6f}".format(epoch, epochs, loss.item()))
 
         if epoch % 5 == 0:
