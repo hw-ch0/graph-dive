@@ -20,7 +20,7 @@ def parse_args():
                         help="path of CSV File path that represents authors' affiliation.")
     parser.add_argument('--citation_threshold', type=int, default=20,
                         help="criterion that decides whether a paper falls above or below top 10%")
-    parser.add_argument('--val_interval', type=int, default=5,
+    parser.add_argument('--val_interval', type=int, default=1,
                         help="run validation per arguments' epoch if exists")
 
     args = parser.parse_args()
@@ -42,17 +42,19 @@ def main():
                                 epoch=0)
     graph_loader = torch_geometric.loader.DataLoader([graph_data], batch_size=len(graph_data.y), shuffle=False)
 
-    model = GraphDiveModel(text_dim=1000, affiliation_dim=3789, year_dim=13, dropout=0.3, hidden_dim=128)
+    model = GraphDiveModel(text_dim=1000, affiliation_dim=3789, embedding_dim=128, year_dim=13, dropout=0.3, hidden_dim=128)
     model.to(device)
 
     # instantiate objective function and optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, betas=(0.9, 0.999), weight_decay=5e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, betas=(0.9, 0.999), weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50, eta_min=0)
     criterion = nn.BCELoss()
 
     # training
-    epochs = 150
+    epochs = 300
     loss_history = []
+    f1_history = []
+    accuracy_history = []
 
     for epoch in range(epochs):
 
@@ -73,9 +75,10 @@ def main():
             train_loss += loss.item()
 
         scheduler.step()
+        loss_history.append(loss.item())
         print("[Epoch {}/{}] Train Loss: {:.6f}".format(epoch, epochs, loss.item()))
 
-        if epoch % 5 == 0:
+        if epoch % args.val_interval == 0:
 
             model.eval()
 
@@ -92,10 +95,25 @@ def main():
                                                 y_pred=pred[train_batch.val_idx])
                     accuracy = metrics.accuracy_score(y_true=train_batch.y[train_batch.val_idx],
                                                       y_pred=pred[train_batch.val_idx])
+            f1_history.append(f1_score)
+            accuracy_history.append(accuracy)
+            print("[Epoch {}/{}] Validation F1 Score: {:.6f}".format(epoch, epochs, f1_score))
+            print("[Epoch {}/{}] Validation Accuracy: {:.6f}".format(epoch, epochs, accuracy))
 
-        print("[Epoch {}/{}] Validation F1 Score: {:.6f}".format(epoch, epochs, f1_score))
-        print("[Epoch {}/{}] Validation Accuracy: {:.6f}".format(epoch, epochs, accuracy))
-            
+    # plot training loss curve
+    plt.plot([i for i in range(epochs)], loss_history, label='CE loss')
+    plt.title('Loss curve_{}'.format(args.conf_id))
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.savefig('./save/loss_curve_{}.jpg'.format(args.conf_id))
+
+    plt.clf()
+    plt.plot([i for i in range(epochs)], f1_history, label='f1 score')
+    plt.plot([i for i in range(epochs)], accuracy_history, label='Accuracy')
+    plt.title('Validation Score_{}'.format(args.conf_id))
+    plt.xlabel('epoch')
+    plt.legend()
+    plt.savefig('./save/val_score_{}.jpg'.format(args.conf_id))
 
 
 
