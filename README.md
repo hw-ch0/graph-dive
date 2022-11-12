@@ -9,7 +9,7 @@
  김산<br>
  김민서<br>
 </br>
-## 📕 Predict a publication trend of AI journals/conferences using GNNs
+## 📕 Predict a publication trend of AI journals / conferences using GNNs
 Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
 </br>
 ## Requirements
