@@ -1,4 +1,7 @@
 [![image.png](https://i.postimg.cc/cHQHGRYD/image.png)](https://postimg.cc/N9jY1rdT)
+📕 Predict a publication trend of AI journals / conferences using GNNs
+Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
+</br>
 
 ## Members
  👑차지수<br>
@@ -9,9 +12,7 @@
  김산<br>
  김민서<br>
 </br>
-## 📕 Predict a publication trend of AI journals / conferences using GNNs
-Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
-</br>
+
 ## Requirements
 
 ### Verisions *(Recommended)*
