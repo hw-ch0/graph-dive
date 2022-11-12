@@ -11,7 +11,7 @@
 </br>
 # 📕 Predict a publication trend of AI journals/conferences using GNNs
 Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
-
+</br>
 # Requirements
 
 ## Verisions *(Recommended)*
@@ -28,7 +28,7 @@ $ docker build -t graph-dive:latest .
 # execute docker container
 $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /workspace graph-dive:latest /bin/bash
 ```
-
+</br>
 
 # Model
 We follow the architecture of baseline paper which is based on GATs and GCNs.  
@@ -38,7 +38,7 @@ We follow the architecture of baseline paper which is based on GATs and GCNs.
 
 **[Prediction stage]**
 ![test_figure](https://user-images.githubusercontent.com/96547408/201436425-743df10e-c2a7-4424-9141-f39611579f07.jpg)
-
+</br>
 
 # Dataset
 ## MAG(Microsoft Academic Graph)
@@ -80,7 +80,7 @@ For each journal/conference, conference IDs are look like:
 |CVPR|1158167855|13058|
 |ICDM|1183478919|4169|
 |CIKM|1194094125|4201|
-
+</br>
 
 # Run
 Command examples
