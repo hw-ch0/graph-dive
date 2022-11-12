@@ -76,7 +76,7 @@ def construct_data(dir_path: str,
         print("Number of Train Nodes : {}".format(len(train_idx)))
         print("Number of Validation Nodes : {}".format(len(val_idx)))
     # data = torch_geometric.data.Data(x = torch.tensor(embeddings, dtype=torch.float),
-    data = torch_geometric.data.Data(x = torch.FloatTensor(np.hstack([texts, years])),
+    data = torch_geometric.data.Data(x = torch.FloatTensor(np.hstack([texts, affiliations, years])),
                                      y = torch.Tensor(labels),
                                      edge_index = torch.tensor(edges).T,
                                      train_idx = [node_mapping_dict.get(i) for i in train_idx],
