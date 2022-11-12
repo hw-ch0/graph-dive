@@ -1,5 +1,4 @@
 # Graph-DIVE
-[![graphdive.png](https://i.postimg.cc/vm0hLnDN/graphdive.png)](https://postimg.cc/f30YMJcc)
 
 ## Members
 👑 차지수<br>
