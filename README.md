@@ -21,7 +21,7 @@ Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structure
 * Torch_geometric 2.1.0  
 
 ### Docker
-We recommend using our [Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile) dockerfile to get started easily
+We recommend using our [Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile) to get started easily
 ```
 ## build docker image
 $ docker build -t graph-dive:latest . 
