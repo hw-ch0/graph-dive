@@ -1,7 +1,7 @@
 [![image.png](https://i.postimg.cc/cHQHGRYD/image.png)](https://postimg.cc/N9jY1rdT)
 
 ## Members
-👑 차지수<br>
+ 차지수👑<br>
  윤수진<br>
  조현우<br>
  진현빈<br>
