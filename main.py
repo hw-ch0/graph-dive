@@ -8,7 +8,8 @@ from models import FCModel, GATModel, GCNModel
 from sklearn import metrics
 import matplotlib.pyplot as plt
 
-device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+# device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+device = 'cpu'
 
 
 def parse_args():
@@ -106,9 +107,9 @@ def main():
                     pred = gcn(gat_embeddings, train_batch)
                     pred = (pred>0.5).long()
                     f1_score = metrics.f1_score(y_true = train_batch.y[graph_data.val_idx],
-                                                y_pred = pred[graph_data.val_idx].squeeze(1))
+                                                y_pred = pred[graph_data.val_idx].squeeze(1).cpu())
                     accuracy = metrics.accuracy_score(y_true = train_batch.y[graph_data.val_idx],
-                                                      y_pred = pred[graph_data.val_idx].squeeze(1))
+                                                      y_pred = pred[graph_data.val_idx].squeeze(1).cpu())
 
                 print("[Epoch {}/{}] Validation F1 Score: {:.6f}".format(epoch, epochs, f1_score))
                 print("[Epoch {}/{}] Validation Accuracy: {:.6f}".format(epoch, epochs, accuracy))

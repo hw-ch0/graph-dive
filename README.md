@@ -1,47 +1,50 @@
-# graph-dive
+[![image.png](https://i.postimg.cc/cHQHGRYD/image.png)](https://postimg.cc/N9jY1rdT)
 
-# 숨참고 GRAPH-DIVE
 ## Members
-👑 차지수<br>
+ 👑차지수<br>
  윤수진<br>
  조현우<br>
  진현빈<br>
  박수빈<br>
  김산<br>
  김민서<br>
-
-## 📕 논문의 트렌드를 예측하는 그래프 모델
+</br>
+## 📕 Predict a publication trend of AI journals / conferences using GNNs
 Baseline paper: <a href="https://ieeexplore.ieee.org/document/9054769">Structured Citation Trend Prediction Using Graph Neural Network</a>
-<br><br> 내 논문의 주제는 citation을 많이 받는 ♨️핫한 주제일까❓
-
-## 1.Requirements
+</br>
+## Requirements
 
 ### Verisions *(Recommended)*
-Python 3.7.15  
-Pytorch 1.12.1+cu113  
-Torch_geometric 2.1.0  
+* Python 3.7.x  
+* Pytorch 1.12.1+cu113  
+* Torch_geometric 2.1.0  
 
 ### Docker
-[Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile) 제공
+We recommend using our [Dockerfile](https://github.com/hwCh00/graph-dive/blob/main/Dockerfile) dockerfile to get started easily
 ```
-# build docker image
+## build docker image
 $ docker build -t graph-dive:latest . 
 
-# execute docker container
+## execute docker container
 $ docker run --name graph-dive --ipc=host -it -v <working_dir>:/workspace -w /workspace graph-dive:latest /bin/bash
 ```
+</br>
+
+## Model
+We follow the architecture of baseline paper which is based on GATs and GCNs.  
+**[Training stage]**
+![train_figure](https://user-images.githubusercontent.com/96547408/201436402-ab75bdf4-a249-4c15-82db-d6496a480fde.jpg)
 
 
-## 2.Model
+**[Prediction stage]**
+![test_figure](https://user-images.githubusercontent.com/96547408/201436425-743df10e-c2a7-4424-9141-f39611579f07.jpg)
+</br>
 
-## 3.Dataset
+## Dataset
 ### MAG(Microsoft Academic Graph)
-<figure>
-<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8ad24d82-02ae-4958-b540-766b19b8d3a2/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221102%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221102T115300Z&X-Amz-Expires=86400&X-Amz-Signature=e3ffb395bfc312fea21f9a7e3f59e1dd17ad4b41b2a822663152b8f625bf391a&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject" style="width:50%">
-<figcaption>[Fig 1. MAG Scheme]</figcaption>
-</figure>
-<br>
-논문 제목, 저자의 명성, Abstract, citation 수, conference id를 필터링해서 사용. 
+We use author, affiliation, the number of citation, title and abstract of paper, year as raw inputs.
+![MAG schema](https://user-images.githubusercontent.com/96547408/201435997-98326513-dfcb-4d05-bec1-90a30177e152.png)
+Please check <a href="https://learn.microsoft.com/en-us/academic-services/graph/reference-data-schema">this webpage</a> for more information. 
 
 ### Data directory tree
 Directory tree including data should be as follows:  
@@ -67,7 +70,7 @@ Directory tree including data should be as follows:
 ```
 
 For each journal/conference, conference IDs are look like:  
-|Conference|Conference ID|# of data|
+|Conference|Conference ID|# of nodes|
 |------|-------|------|
 |ICML|1180662882|8653|
 |ICASSP|1121227772|16997|
@@ -77,10 +80,19 @@ For each journal/conference, conference IDs are look like:
 |CVPR|1158167855|13058|
 |ICDM|1183478919|4169|
 |CIKM|1194094125|4201|
+</br>
 
+## Run
+Command examples
+```
+# CVPR
+$ bash scripts/run_CVPR.sh
 
-## 4.Evaluation
+# ICASSP
+$ bash scripts/run_ICASSP.sh
+```
+Note that the number of valid data are smaller than the values stated above due to insufficient sources(OpenAlex API, MAG dataset, etc..)
 
-### 📝 SKILLS
+## 📝 SKILLS
 Frameworks:  
 <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white"/> <img src="https://img.shields.io/badge/scikit-learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white"/> <img src="https://img.shields.io/badge/pyg-3C2179?style=flat-square&logo=pyg&logoColor=white"/>
